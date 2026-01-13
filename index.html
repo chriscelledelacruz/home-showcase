@@ -32,6 +32,7 @@
         html {
             overflow: hidden;
             height: 100%;
+            width: 100%;
             -webkit-overflow-scrolling: touch;
         }
 
@@ -39,12 +40,15 @@
             font-family: 'DM Sans', sans-serif;
             background: var(--staffbase-darker);
             color: var(--text-primary);
-            height: 100vh;
-            height: 100dvh; /* Dynamic viewport height for mobile browsers */
+            height: 100%;
+            width: 100%;
             overflow: hidden;
             cursor: default;
-            touch-action: none;
+            touch-action: pan-y;
             -webkit-tap-highlight-color: transparent;
+            position: fixed;
+            top: 0;
+            left: 0;
         }
 
         /* Custom Cursor */
@@ -113,7 +117,6 @@
         .progress-container {
             position: fixed;
             right: 60px;
-            right: calc(60px + env(safe-area-inset-right, 0px));
             top: 50%;
             transform: translateY(-50%);
             z-index: 1000;
@@ -173,9 +176,7 @@
         .slide-counter {
             position: fixed;
             left: 60px;
-            left: calc(60px + env(safe-area-inset-left, 0px));
             bottom: 40px;
-            bottom: calc(40px + env(safe-area-inset-bottom, 0px));
             z-index: 1000;
             display: flex;
             align-items: baseline;
@@ -204,7 +205,6 @@
         .scroll-hint {
             position: fixed;
             bottom: 40px;
-            bottom: calc(40px + env(safe-area-inset-bottom, 0px));
             left: 50%;
             transform: translateX(-50%);
             z-index: 1000;
@@ -256,10 +256,11 @@
 
         /* Main Container */
         .slides-container {
-            position: relative;
+            position: absolute;
+            top: 0;
+            left: 0;
             width: 100%;
-            height: 100vh;
-            height: 100dvh;
+            height: 100%;
             z-index: 10;
         }
 
@@ -277,7 +278,9 @@
             visibility: hidden;
             transition: opacity 0.8s ease, visibility 0.8s ease;
             overflow-y: auto;
+            overflow-x: hidden;
             -webkit-overflow-scrolling: touch;
+            padding: 20px 0;
         }
 
         .slide.active {
@@ -539,6 +542,14 @@
             text-align: center;
         }
 
+        .slide-welcome .slide-left {
+            width: 100%;
+            max-width: 900px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
         .welcome-title {
             font-family: 'Syne', sans-serif;
             font-size: clamp(56px, 8vw, 96px);
@@ -733,130 +744,14 @@
 
         /* Responsive - Tablet Portrait */
         @media (max-width: 768px) {
+            .slide {
+                padding: 60px 0 80px 0;
+                align-items: flex-start;
+            }
+
             .slide-content {
-                padding: 0 40px;
-            }
-
-            .slide-counter {
-                left: 20px;
-                bottom: 20px;
-            }
-
-            .counter-current {
-                font-size: 32px;
-            }
-
-            .counter-total {
-                font-size: 14px;
-            }
-
-            .slide-title {
-                font-size: clamp(36px, 8vw, 48px);
-                letter-spacing: -1px;
-                margin-bottom: 20px;
-            }
-
-            .slide-description {
-                font-size: 16px;
-                margin-bottom: 30px;
-            }
-
-            .industry-tag {
-                margin-bottom: 20px;
-                padding: 6px 12px;
-            }
-
-            .industry-tag-text {
-                font-size: 10px;
-                letter-spacing: 2px;
-            }
-
-            .progress-container {
-                right: 20px;
-                gap: 16px;
-            }
-
-            .progress-dot {
-                width: 10px;
-                height: 10px;
-            }
-
-            .scroll-hint {
-                bottom: 20px;
-            }
-
-            .scroll-hint-text {
-                font-size: 10px;
-                letter-spacing: 2px;
-            }
-
-            .scroll-hint-icon {
-                width: 20px;
-                height: 34px;
-            }
-
-            .portfolio-grid {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 12px;
-                max-width: 400px;
-            }
-
-            .portfolio-card {
-                padding: 20px 12px;
-                border-radius: 16px;
-            }
-
-            .portfolio-icon {
-                font-size: 28px;
-                width: 56px;
-                height: 56px;
-                border-radius: 12px;
-            }
-
-            .portfolio-name {
-                font-size: 13px;
-            }
-
-            .welcome-title {
-                font-size: clamp(40px, 10vw, 64px);
-                letter-spacing: -2px;
-            }
-
-            .welcome-subtitle {
-                font-size: 16px;
-                margin-bottom: 40px;
-            }
-
-            .stats-row {
-                flex-wrap: wrap;
-                justify-content: center;
-                gap: 30px;
-            }
-
-            .stat-item {
-                flex: 0 0 40%;
-            }
-
-            .stat-value {
-                font-size: 32px;
-            }
-
-            .stat-label {
-                font-size: 11px;
-            }
-
-            /* Hide custom cursor on touch devices */
-            .cursor,
-            .cursor-dot {
-                display: none;
-            }
-        }
-
-        /* Responsive - Mobile Large */
-        @media (max-width: 576px) {
-            .slide-content {
-                padding: 0 24px;
-                padding-top: 60px;
+                padding: 0 30px;
+                padding-right: 50px;
             }
 
             .slide-counter {
@@ -868,33 +763,35 @@
                 font-size: 28px;
             }
 
-            .counter-divider {
-                font-size: 18px;
-            }
-
             .counter-total {
                 font-size: 12px;
             }
 
             .slide-title {
-                font-size: clamp(32px, 9vw, 42px);
+                font-size: clamp(32px, 8vw, 42px);
+                letter-spacing: -1px;
+                margin-bottom: 16px;
             }
 
             .slide-description {
                 font-size: 15px;
+                margin-bottom: 24px;
                 line-height: 1.6;
             }
 
-            .slide-cta {
-                padding: 14px 28px;
-                font-size: 14px;
-                width: 100%;
-                justify-content: center;
+            .industry-tag {
+                margin-bottom: 16px;
+                padding: 6px 12px;
+            }
+
+            .industry-tag-text {
+                font-size: 9px;
+                letter-spacing: 2px;
             }
 
             .progress-container {
-                right: 16px;
-                gap: 14px;
+                right: 12px;
+                gap: 12px;
             }
 
             .progress-dot {
@@ -903,42 +800,71 @@
             }
 
             .scroll-hint {
-                bottom: 16px;
+                bottom: 12px;
+            }
+
+            .scroll-hint-text {
+                font-size: 9px;
+                letter-spacing: 2px;
+            }
+
+            .scroll-hint-icon {
+                width: 18px;
+                height: 30px;
+            }
+
+            .slide-cta {
+                padding: 14px 24px;
+                font-size: 14px;
+            }
+
+            /* Welcome slide specific mobile styles */
+            .slide-welcome .slide-content {
+                padding: 0 20px;
+                padding-right: 40px;
+            }
+
+            .welcome-title {
+                font-size: clamp(32px, 9vw, 48px);
+                letter-spacing: -1.5px;
+                margin-bottom: 16px;
+            }
+
+            .welcome-subtitle {
+                font-size: 14px;
+                margin-bottom: 28px;
+                line-height: 1.5;
             }
 
             .portfolio-grid {
                 grid-template-columns: repeat(2, 1fr);
                 gap: 10px;
                 max-width: 100%;
+                width: 100%;
             }
 
             .portfolio-card {
                 padding: 16px 10px;
-                gap: 10px;
+                border-radius: 14px;
+                gap: 8px;
             }
 
             .portfolio-icon {
-                font-size: 24px;
-                width: 48px;
-                height: 48px;
+                font-size: 26px;
+                width: 50px;
+                height: 50px;
+                border-radius: 12px;
             }
 
             .portfolio-name {
                 font-size: 11px;
             }
 
-            .welcome-title {
-                font-size: clamp(32px, 10vw, 48px);
-            }
-
-            .welcome-subtitle {
-                font-size: 15px;
-                margin-bottom: 32px;
-            }
-
             .stats-row {
-                margin-top: 40px;
-                gap: 20px;
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 16px;
+                margin-top: 28px;
             }
 
             .stat-item {
@@ -951,53 +877,91 @@
 
             .stat-label {
                 font-size: 10px;
-                letter-spacing: 1.5px;
+                letter-spacing: 1px;
+            }
+
+            /* Hide custom cursor on touch devices */
+            .cursor,
+            .cursor-dot {
+                display: none;
             }
         }
 
-        /* Responsive - Mobile Small */
-        @media (max-width: 380px) {
+        /* Responsive - Mobile Large */
+        @media (max-width: 576px) {
+            .slide {
+                padding: 50px 0 70px 0;
+            }
+
             .slide-content {
-                padding: 0 16px;
-                padding-top: 50px;
+                padding: 0 20px;
+                padding-right: 40px;
+            }
+
+            .slide-counter {
+                left: 12px;
+                bottom: 12px;
+            }
+
+            .counter-current {
+                font-size: 24px;
+            }
+
+            .counter-divider {
+                font-size: 16px;
+            }
+
+            .counter-total {
+                font-size: 11px;
             }
 
             .slide-title {
-                font-size: 28px;
+                font-size: clamp(28px, 8vw, 36px);
+                letter-spacing: -0.5px;
             }
 
             .slide-description {
                 font-size: 14px;
             }
 
-            .industry-tag {
-                padding: 5px 10px;
-            }
-
-            .industry-tag-text {
-                font-size: 9px;
-                letter-spacing: 1.5px;
-            }
-
             .slide-cta {
-                padding: 12px 24px;
+                padding: 12px 20px;
                 font-size: 13px;
+                width: 100%;
+                justify-content: center;
+            }
+
+            .progress-container {
+                right: 10px;
+                gap: 10px;
+            }
+
+            .progress-dot {
+                width: 6px;
+                height: 6px;
+                border-width: 1.5px;
+            }
+
+            .scroll-hint {
+                display: none;
             }
 
             .welcome-title {
-                font-size: 28px;
+                font-size: clamp(28px, 8vw, 38px);
             }
 
             .welcome-subtitle {
-                font-size: 14px;
+                font-size: 13px;
             }
 
             .portfolio-grid {
+                grid-template-columns: repeat(2, 1fr);
                 gap: 8px;
             }
 
             .portfolio-card {
                 padding: 14px 8px;
+                gap: 6px;
             }
 
             .portfolio-icon {
@@ -1011,7 +975,8 @@
             }
 
             .stats-row {
-                gap: 16px;
+                gap: 12px;
+                margin-top: 24px;
             }
 
             .stat-value {
@@ -1023,69 +988,59 @@
             }
         }
 
-        /* Landscape mode for mobile */
-        @media (max-height: 500px) and (orientation: landscape) {
+        /* Responsive - Mobile Small */
+        @media (max-width: 380px) {
+            .slide {
+                padding: 40px 0 60px 0;
+            }
+
             .slide-content {
-                padding: 0 40px;
-                padding-top: 20px;
+                padding: 0 16px;
+                padding-right: 36px;
             }
 
             .slide-title {
-                font-size: 28px;
-                margin-bottom: 12px;
+                font-size: 26px;
             }
 
             .slide-description {
                 font-size: 13px;
-                margin-bottom: 16px;
-                max-width: 400px;
             }
 
             .industry-tag {
-                margin-bottom: 12px;
+                padding: 4px 10px;
+            }
+
+            .industry-tag-text {
+                font-size: 8px;
+                letter-spacing: 1.5px;
             }
 
             .slide-cta {
-                padding: 10px 24px;
-                font-size: 13px;
-            }
-
-            .scroll-hint {
-                display: none;
-            }
-
-            .slide-counter {
-                bottom: 10px;
-            }
-
-            .counter-current {
-                font-size: 24px;
+                padding: 11px 18px;
+                font-size: 12px;
             }
 
             .welcome-title {
-                font-size: 32px;
-                margin-bottom: 12px;
+                font-size: 26px;
             }
 
             .welcome-subtitle {
-                font-size: 14px;
-                margin-bottom: 24px;
+                font-size: 12px;
             }
 
             .portfolio-grid {
-                grid-template-columns: repeat(6, 1fr);
-                gap: 8px;
-                max-width: 100%;
+                gap: 6px;
             }
 
             .portfolio-card {
-                padding: 12px 8px;
+                padding: 12px 6px;
             }
 
             .portfolio-icon {
+                font-size: 20px;
                 width: 40px;
                 height: 40px;
-                font-size: 20px;
             }
 
             .portfolio-name {
@@ -1093,16 +1048,184 @@
             }
 
             .stats-row {
-                margin-top: 20px;
-                gap: 24px;
+                gap: 10px;
             }
 
             .stat-value {
-                font-size: 24px;
+                font-size: 22px;
             }
 
             .stat-label {
+                font-size: 8px;
+            }
+
+            .progress-container {
+                right: 8px;
+                gap: 8px;
+            }
+
+            .progress-dot {
+                width: 5px;
+                height: 5px;
+            }
+        }
+
+        /* Very small height (landscape or small iframe) */
+        @media (max-height: 500px) {
+            .slide {
+                padding: 30px 0 50px 0;
+                align-items: flex-start;
+            }
+
+            .slide-content {
+                padding: 0 30px;
+                padding-right: 50px;
+            }
+
+            .slide-title {
+                font-size: 24px;
+                margin-bottom: 10px;
+            }
+
+            .slide-description {
+                font-size: 12px;
+                margin-bottom: 14px;
+            }
+
+            .industry-tag {
+                margin-bottom: 10px;
+                padding: 4px 8px;
+            }
+
+            .industry-tag-text {
+                font-size: 8px;
+            }
+
+            .slide-cta {
+                padding: 10px 20px;
+                font-size: 12px;
+            }
+
+            .scroll-hint {
+                display: none;
+            }
+
+            .slide-counter {
+                bottom: 8px;
+            }
+
+            .counter-current {
+                font-size: 20px;
+            }
+
+            .welcome-title {
+                font-size: 26px;
+                margin-bottom: 10px;
+            }
+
+            .welcome-subtitle {
+                font-size: 12px;
+                margin-bottom: 20px;
+            }
+
+            .portfolio-grid {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 8px;
+            }
+
+            .portfolio-card {
+                padding: 10px 6px;
+            }
+
+            .portfolio-icon {
+                width: 36px;
+                height: 36px;
+                font-size: 18px;
+            }
+
+            .portfolio-name {
                 font-size: 9px;
+            }
+
+            .stats-row {
+                margin-top: 16px;
+                gap: 20px;
+                flex-wrap: nowrap;
+            }
+
+            .stat-item {
+                flex: 1;
+            }
+
+            .stat-value {
+                font-size: 20px;
+            }
+
+            .stat-label {
+                font-size: 8px;
+            }
+        }
+
+        /* Extra small height */
+        @media (max-height: 400px) {
+            .slide {
+                padding: 20px 0 40px 0;
+            }
+
+            .slide-title {
+                font-size: 20px;
+                margin-bottom: 8px;
+            }
+
+            .slide-description {
+                font-size: 11px;
+                margin-bottom: 12px;
+            }
+
+            .slide-cta {
+                padding: 8px 16px;
+                font-size: 11px;
+            }
+
+            .welcome-title {
+                font-size: 22px;
+            }
+
+            .welcome-subtitle {
+                font-size: 11px;
+                margin-bottom: 16px;
+            }
+
+            .portfolio-grid {
+                grid-template-columns: repeat(6, 1fr);
+                gap: 6px;
+            }
+
+            .portfolio-card {
+                padding: 8px 4px;
+            }
+
+            .portfolio-icon {
+                width: 32px;
+                height: 32px;
+                font-size: 16px;
+            }
+
+            .portfolio-name {
+                font-size: 8px;
+            }
+
+            .stats-row {
+                margin-top: 12px;
+                gap: 16px;
+            }
+
+            .stat-value {
+                font-size: 18px;
+            }
+
+            .stat-label {
+                font-size: 7px;
             }
         }
     </style>
@@ -1169,7 +1292,7 @@
         <!-- Slide 1: Welcome Portal -->
         <div class="slide slide-welcome active" data-index="0">
             <div class="slide-content">
-                <div class="slide-left" style="grid-column: 1 / -1;">
+                <div class="slide-left">
                     <div class="industry-tag">
                         <span class="industry-tag-dot"></span>
                         <span class="industry-tag-text">Welcome to the Future</span>
@@ -1488,6 +1611,7 @@
                 this.isAnimating = false;
                 this.touchStartY = 0;
                 this.touchStartX = 0;
+                this.touchStartTime = 0;
                 this.lastScrollTime = Date.now();
                 
                 this.init();
@@ -1497,16 +1621,26 @@
                 // Wheel event
                 window.addEventListener('wheel', (e) => this.handleScroll(e), { passive: false });
                 
-                // Touch events with improved handling
-                window.addEventListener('touchstart', (e) => this.handleTouchStart(e), { passive: true });
-                window.addEventListener('touchend', (e) => this.handleTouchEnd(e), { passive: false });
+                // Touch events with improved handling for iframe
+                document.addEventListener('touchstart', (e) => this.handleTouchStart(e), { passive: true });
+                document.addEventListener('touchmove', (e) => this.handleTouchMove(e), { passive: false });
+                document.addEventListener('touchend', (e) => this.handleTouchEnd(e), { passive: true });
                 
                 // Keyboard events
                 window.addEventListener('keydown', (e) => this.handleKeydown(e));
                 
-                // Progress dots click
+                // Progress dots click/touch
                 document.querySelectorAll('.progress-item').forEach(item => {
-                    item.addEventListener('click', () => {
+                    item.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        const slideIndex = parseInt(item.dataset.slide);
+                        this.goToSlide(slideIndex);
+                    });
+                    
+                    item.addEventListener('touchend', (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
                         const slideIndex = parseInt(item.dataset.slide);
                         this.goToSlide(slideIndex);
                     });
@@ -1516,27 +1650,19 @@
                 if (window.matchMedia('(hover: hover)').matches) {
                     this.initCursor();
                 }
-
-                // Handle resize
-                window.addEventListener('resize', () => this.handleResize());
-            }
-
-            handleResize() {
-                // Recalculate viewport height for mobile browsers
-                document.documentElement.style.setProperty('--vh', `${window.innerHeight * 0.01}px`);
             }
 
             handleScroll(e) {
                 e.preventDefault();
                 
                 const now = Date.now();
-                if (now - this.lastScrollTime < 100) return;
+                if (now - this.lastScrollTime < 150) return;
                 
                 if (this.isAnimating) return;
                 
                 const delta = e.deltaY;
                 
-                if (Math.abs(delta) > 30) {
+                if (Math.abs(delta) > 20) {
                     if (delta > 0) {
                         this.nextSlide();
                     } else {
@@ -1552,6 +1678,21 @@
                 this.touchStartTime = Date.now();
             }
 
+            handleTouchMove(e) {
+                // Only prevent default if we're doing a vertical swipe
+                if (this.isAnimating) return;
+                
+                const touchY = e.touches[0].clientY;
+                const touchX = e.touches[0].clientX;
+                const diffY = this.touchStartY - touchY;
+                const diffX = this.touchStartX - touchX;
+                
+                // If vertical movement is greater than horizontal, prevent scrolling
+                if (Math.abs(diffY) > Math.abs(diffX) && Math.abs(diffY) > 10) {
+                    e.preventDefault();
+                }
+            }
+
             handleTouchEnd(e) {
                 if (this.isAnimating) return;
                 
@@ -1563,12 +1704,11 @@
                 const diffX = this.touchStartX - touchEndX;
                 const timeDiff = touchEndTime - this.touchStartTime;
                 
-                // Only register as swipe if:
-                // 1. Vertical movement is greater than horizontal (not a horizontal swipe)
-                // 2. Movement is significant enough (> 50px)
-                // 3. Swipe was fast enough (< 500ms)
-                if (Math.abs(diffY) > Math.abs(diffX) && Math.abs(diffY) > 50 && timeDiff < 500) {
-                    e.preventDefault();
+                // Swipe detection:
+                // 1. Vertical movement > horizontal (it's a vertical swipe)
+                // 2. Movement is significant (> 30px for mobile sensitivity)
+                // 3. Swipe was reasonably fast (< 600ms)
+                if (Math.abs(diffY) > Math.abs(diffX) && Math.abs(diffY) > 30 && timeDiff < 600) {
                     if (diffY > 0) {
                         this.nextSlide();
                     } else {
@@ -1611,6 +1751,9 @@
                 slides[this.currentSlide].classList.remove('active');
                 slides[index].classList.add('active');
                 
+                // Scroll slide to top
+                slides[index].scrollTop = 0;
+                
                 // Update progress
                 const progressItems = document.querySelectorAll('.progress-item');
                 progressItems[this.currentSlide].classList.remove('active');
@@ -1622,10 +1765,12 @@
                 
                 // Update scroll hint visibility
                 const scrollHint = document.querySelector('.scroll-hint');
-                if (index === this.totalSlides - 1) {
-                    scrollHint.style.opacity = '0';
-                } else {
-                    scrollHint.style.opacity = '0.6';
+                if (scrollHint) {
+                    if (index === this.totalSlides - 1) {
+                        scrollHint.style.opacity = '0';
+                    } else {
+                        scrollHint.style.opacity = '0.6';
+                    }
                 }
                 
                 this.currentSlide = index;
@@ -1683,13 +1828,12 @@
             }
         }
 
-        // Initialize
-        document.addEventListener('DOMContentLoaded', () => {
+        // Initialize when DOM is ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => new ScrollSlider());
+        } else {
             new ScrollSlider();
-            
-            // Set initial viewport height
-            document.documentElement.style.setProperty('--vh', `${window.innerHeight * 0.01}px`);
-        });
+        }
     </script>
 </body>
 </html>
