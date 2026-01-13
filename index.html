@@ -1,0 +1,1704 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#050810">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Staffbase | Industry Solutions Portal</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Space+Grotesk:wght@300..700&family=Syne:wght@400..800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --staffbase-blue: #0052CC;
+            --staffbase-light-blue: #4C9AFF;
+            --staffbase-dark: #0A0F1C;
+            --staffbase-darker: #050810;
+            --accent-gold: #C9A962;
+            --accent-copper: #B87333;
+            --text-primary: #FFFFFF;
+            --text-secondary: rgba(255, 255, 255, 0.7);
+            --text-muted: rgba(255, 255, 255, 0.4);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            overflow: hidden;
+            height: 100%;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--staffbase-darker);
+            color: var(--text-primary);
+            height: 100vh;
+            height: 100dvh; /* Dynamic viewport height for mobile browsers */
+            overflow: hidden;
+            cursor: default;
+            touch-action: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* Custom Cursor */
+        .cursor {
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--staffbase-light-blue);
+            border-radius: 50%;
+            position: fixed;
+            pointer-events: none;
+            z-index: 10000;
+            transition: transform 0.15s ease, opacity 0.15s ease;
+            mix-blend-mode: difference;
+        }
+
+        .cursor-dot {
+            width: 4px;
+            height: 4px;
+            background: var(--accent-gold);
+            border-radius: 50%;
+            position: fixed;
+            pointer-events: none;
+            z-index: 10001;
+        }
+
+        /* Background Effects */
+        .bg-grid {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(76, 154, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(76, 154, 255, 0.03) 1px, transparent 1px);
+            background-size: 60px 60px;
+            z-index: 0;
+            opacity: 0.5;
+        }
+
+        .bg-gradient {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(ellipse at 20% 20%, rgba(0, 82, 204, 0.15) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 80%, rgba(201, 169, 98, 0.1) 0%, transparent 50%);
+            z-index: 0;
+        }
+
+        .noise-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.03;
+            z-index: 1;
+            pointer-events: none;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%' height='100%' filter='url(%23noise)'/%3E%3C/svg%3E");
+        }
+
+        /* Progress Indicator */
+        .progress-container {
+            position: fixed;
+            right: 60px;
+            right: calc(60px + env(safe-area-inset-right, 0px));
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .progress-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            cursor: pointer;
+            opacity: 0.4;
+            transition: opacity 0.3s ease;
+        }
+
+        .progress-item.active {
+            opacity: 1;
+        }
+
+        .progress-item:hover {
+            opacity: 0.8;
+        }
+
+        .progress-dot {
+            width: 12px;
+            height: 12px;
+            border: 2px solid var(--text-secondary);
+            border-radius: 50%;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .progress-item.active .progress-dot {
+            border-color: var(--accent-gold);
+            background: var(--accent-gold);
+            box-shadow: 0 0 20px rgba(201, 169, 98, 0.5);
+        }
+
+        .progress-label {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 11px;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+            font-weight: 400;
+            white-space: nowrap;
+            opacity: 0.8;
+        }
+
+        .progress-item.active .progress-label {
+            color: var(--text-primary);
+        }
+
+        /* Slide Counter */
+        .slide-counter {
+            position: fixed;
+            left: 60px;
+            left: calc(60px + env(safe-area-inset-left, 0px));
+            bottom: 40px;
+            bottom: calc(40px + env(safe-area-inset-bottom, 0px));
+            z-index: 1000;
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+        }
+
+        .counter-current {
+            font-family: 'Syne', sans-serif;
+            font-size: 48px;
+            font-weight: 700;
+            color: var(--text-primary);
+            line-height: 1;
+        }
+
+        .counter-divider {
+            font-size: 24px;
+            color: var(--accent-gold);
+        }
+
+        .counter-total {
+            font-size: 18px;
+            color: var(--text-muted);
+        }
+
+        /* Scroll Hint */
+        .scroll-hint {
+            position: fixed;
+            bottom: 40px;
+            bottom: calc(40px + env(safe-area-inset-bottom, 0px));
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            opacity: 0.6;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.6; transform: translateX(-50%) translateY(0); }
+            50% { opacity: 1; transform: translateX(-50%) translateY(5px); }
+        }
+
+        .scroll-hint-text {
+            font-size: 11px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: var(--text-muted);
+        }
+
+        .scroll-hint-icon {
+            width: 24px;
+            height: 40px;
+            border: 2px solid var(--text-muted);
+            border-radius: 12px;
+            position: relative;
+        }
+
+        .scroll-hint-icon::before {
+            content: '';
+            position: absolute;
+            top: 8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 4px;
+            height: 8px;
+            background: var(--accent-gold);
+            border-radius: 2px;
+            animation: scrollDown 1.5s ease-in-out infinite;
+        }
+
+        @keyframes scrollDown {
+            0%, 100% { top: 8px; opacity: 1; }
+            50% { top: 20px; opacity: 0.3; }
+        }
+
+        /* Main Container */
+        .slides-container {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            height: 100dvh;
+            z-index: 10;
+        }
+
+        /* Individual Slides */
+        .slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.8s ease, visibility 0.8s ease;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .slide.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .slide-content {
+            max-width: 1400px;
+            width: 100%;
+            padding: 0 120px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 80px;
+            align-items: center;
+        }
+
+        /* Left Content */
+        .slide-left {
+            transform: translateX(-50px);
+            opacity: 0;
+            transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.2s;
+        }
+
+        .slide.active .slide-left {
+            transform: translateX(0);
+            opacity: 1;
+        }
+
+        .industry-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: rgba(201, 169, 98, 0.1);
+            border: 1px solid rgba(201, 169, 98, 0.3);
+            border-radius: 30px;
+            margin-bottom: 30px;
+        }
+
+        .industry-tag-dot {
+            width: 6px;
+            height: 6px;
+            background: var(--accent-gold);
+            border-radius: 50%;
+        }
+
+        .industry-tag-text {
+            font-size: 11px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: var(--accent-gold);
+            font-weight: 600;
+        }
+
+        .slide-title {
+            font-family: 'Syne', sans-serif;
+            font-size: clamp(48px, 6vw, 72px);
+            font-weight: 800;
+            line-height: 1.05;
+            letter-spacing: -2px;
+            margin-bottom: 30px;
+        }
+
+        .slide-title span {
+            background: linear-gradient(135deg, var(--text-primary) 0%, var(--staffbase-light-blue) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .slide-description {
+            font-size: 18px;
+            line-height: 1.7;
+            color: var(--text-secondary);
+            margin-bottom: 40px;
+            max-width: 480px;
+        }
+
+        .slide-cta {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            padding: 18px 36px;
+            background: linear-gradient(135deg, var(--staffbase-blue), var(--staffbase-light-blue));
+            border: none;
+            border-radius: 50px;
+            color: white;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .slide-cta::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--accent-gold), var(--accent-copper));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .slide-cta:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 20px 40px rgba(0, 82, 204, 0.3);
+        }
+
+        .slide-cta:hover::before {
+            opacity: 1;
+        }
+
+        .slide-cta span {
+            position: relative;
+            z-index: 1;
+        }
+
+        .cta-arrow {
+            position: relative;
+            z-index: 1;
+            transition: transform 0.3s ease;
+        }
+
+        .slide-cta:hover .cta-arrow {
+            transform: translateX(4px);
+        }
+
+        /* Right Visual */
+        .slide-right {
+            position: relative;
+            transform: translateX(50px);
+            opacity: 0;
+            transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.4s;
+        }
+
+        .slide.active .slide-right {
+            transform: translateX(0);
+            opacity: 1;
+        }
+
+        .visual-container {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .visual-ring {
+            position: absolute;
+            border-radius: 50%;
+            border: 1px solid rgba(76, 154, 255, 0.2);
+        }
+
+        .visual-ring-1 {
+            width: 100%;
+            height: 100%;
+            animation: rotate 30s linear infinite;
+        }
+
+        .visual-ring-2 {
+            width: 80%;
+            height: 80%;
+            border-style: dashed;
+            animation: rotate 25s linear infinite reverse;
+        }
+
+        .visual-ring-3 {
+            width: 60%;
+            height: 60%;
+            animation: rotate 20s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .visual-icon {
+            position: absolute;
+            width: 200px;
+            height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 100px;
+            background: linear-gradient(135deg, rgba(0, 82, 204, 0.2), rgba(76, 154, 255, 0.1));
+            border-radius: 50%;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(76, 154, 255, 0.2);
+            box-shadow: 
+                0 0 60px rgba(0, 82, 204, 0.3),
+                inset 0 0 60px rgba(0, 82, 204, 0.1);
+        }
+
+        .floating-elements {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+        }
+
+        .floating-element {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            background: rgba(201, 169, 98, 0.1);
+            border: 1px solid rgba(201, 169, 98, 0.3);
+            border-radius: 16px;
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            animation: float 4s ease-in-out infinite;
+        }
+
+        .floating-element:nth-child(1) {
+            top: 10%;
+            left: 10%;
+            animation-delay: 0s;
+        }
+
+        .floating-element:nth-child(2) {
+            top: 20%;
+            right: 5%;
+            animation-delay: 1s;
+        }
+
+        .floating-element:nth-child(3) {
+            bottom: 20%;
+            left: 5%;
+            animation-delay: 2s;
+        }
+
+        .floating-element:nth-child(4) {
+            bottom: 10%;
+            right: 15%;
+            animation-delay: 3s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-15px) rotate(5deg); }
+        }
+
+        /* Welcome Slide */
+        .slide-welcome .slide-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .welcome-title {
+            font-family: 'Syne', sans-serif;
+            font-size: clamp(56px, 8vw, 96px);
+            font-weight: 800;
+            line-height: 1.05;
+            letter-spacing: -3px;
+            margin-bottom: 30px;
+            background: linear-gradient(135deg, var(--text-primary) 0%, var(--staffbase-light-blue) 50%, var(--accent-gold) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .welcome-subtitle {
+            font-size: 22px;
+            line-height: 1.6;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin-bottom: 60px;
+        }
+
+        .portfolio-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            width: 100%;
+            max-width: 900px;
+        }
+
+        .portfolio-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 20px;
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .portfolio-card:hover {
+            background: rgba(0, 82, 204, 0.1);
+            border-color: rgba(76, 154, 255, 0.3);
+            transform: translateY(-8px);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .portfolio-icon {
+            font-size: 36px;
+            width: 70px;
+            height: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, rgba(0, 82, 204, 0.2), rgba(76, 154, 255, 0.1));
+            border-radius: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .portfolio-card:hover .portfolio-icon {
+            transform: scale(1.1);
+            background: linear-gradient(135deg, rgba(201, 169, 98, 0.2), rgba(184, 115, 51, 0.1));
+        }
+
+        .portfolio-name {
+            font-family: 'Syne', sans-serif;
+            font-size: 16px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        /* Stats */
+        .stats-row {
+            display: flex;
+            gap: 60px;
+            margin-top: 60px;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-family: 'Syne', sans-serif;
+            font-size: 42px;
+            font-weight: 800;
+            color: var(--accent-gold);
+            line-height: 1;
+        }
+
+        .stat-label {
+            font-size: 13px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-top: 8px;
+        }
+
+        /* Responsive - Large Desktop */
+        @media (max-width: 1400px) {
+            .slide-content {
+                padding: 0 80px;
+                gap: 60px;
+            }
+
+            .visual-container {
+                max-width: 450px;
+            }
+        }
+
+        /* Responsive - Desktop */
+        @media (max-width: 1200px) {
+            .slide-content {
+                padding: 0 60px;
+                gap: 50px;
+            }
+
+            .progress-container {
+                right: 30px;
+            }
+
+            .progress-label {
+                display: none;
+            }
+
+            .slide-title {
+                font-size: clamp(42px, 5vw, 60px);
+            }
+
+            .visual-container {
+                max-width: 380px;
+            }
+
+            .visual-icon {
+                width: 160px;
+                height: 160px;
+                font-size: 80px;
+            }
+
+            .floating-element {
+                width: 50px;
+                height: 50px;
+                font-size: 20px;
+            }
+        }
+
+        /* Responsive - Tablet Landscape */
+        @media (max-width: 1024px) {
+            .slide-content {
+                grid-template-columns: 1fr;
+                gap: 40px;
+                text-align: center;
+                max-width: 700px;
+                margin: 0 auto;
+            }
+
+            .slide-left {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .slide-description {
+                max-width: 100%;
+            }
+
+            .slide-right {
+                display: none;
+            }
+
+            .slide-cta {
+                padding: 16px 32px;
+            }
+
+            .portfolio-grid {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 16px;
+            }
+
+            .portfolio-card {
+                padding: 24px 16px;
+            }
+
+            .stats-row {
+                gap: 40px;
+            }
+        }
+
+        /* Responsive - Tablet Portrait */
+        @media (max-width: 768px) {
+            .slide-content {
+                padding: 0 40px;
+            }
+
+            .slide-counter {
+                left: 20px;
+                bottom: 20px;
+            }
+
+            .counter-current {
+                font-size: 32px;
+            }
+
+            .counter-total {
+                font-size: 14px;
+            }
+
+            .slide-title {
+                font-size: clamp(36px, 8vw, 48px);
+                letter-spacing: -1px;
+                margin-bottom: 20px;
+            }
+
+            .slide-description {
+                font-size: 16px;
+                margin-bottom: 30px;
+            }
+
+            .industry-tag {
+                margin-bottom: 20px;
+                padding: 6px 12px;
+            }
+
+            .industry-tag-text {
+                font-size: 10px;
+                letter-spacing: 2px;
+            }
+
+            .progress-container {
+                right: 20px;
+                gap: 16px;
+            }
+
+            .progress-dot {
+                width: 10px;
+                height: 10px;
+            }
+
+            .scroll-hint {
+                bottom: 20px;
+            }
+
+            .scroll-hint-text {
+                font-size: 10px;
+                letter-spacing: 2px;
+            }
+
+            .scroll-hint-icon {
+                width: 20px;
+                height: 34px;
+            }
+
+            .portfolio-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 12px;
+                max-width: 400px;
+            }
+
+            .portfolio-card {
+                padding: 20px 12px;
+                border-radius: 16px;
+            }
+
+            .portfolio-icon {
+                font-size: 28px;
+                width: 56px;
+                height: 56px;
+                border-radius: 12px;
+            }
+
+            .portfolio-name {
+                font-size: 13px;
+            }
+
+            .welcome-title {
+                font-size: clamp(40px, 10vw, 64px);
+                letter-spacing: -2px;
+            }
+
+            .welcome-subtitle {
+                font-size: 16px;
+                margin-bottom: 40px;
+            }
+
+            .stats-row {
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 30px;
+            }
+
+            .stat-item {
+                flex: 0 0 40%;
+            }
+
+            .stat-value {
+                font-size: 32px;
+            }
+
+            .stat-label {
+                font-size: 11px;
+            }
+
+            /* Hide custom cursor on touch devices */
+            .cursor,
+            .cursor-dot {
+                display: none;
+            }
+        }
+
+        /* Responsive - Mobile Large */
+        @media (max-width: 576px) {
+            .slide-content {
+                padding: 0 24px;
+                padding-top: 60px;
+            }
+
+            .slide-counter {
+                left: 16px;
+                bottom: 16px;
+            }
+
+            .counter-current {
+                font-size: 28px;
+            }
+
+            .counter-divider {
+                font-size: 18px;
+            }
+
+            .counter-total {
+                font-size: 12px;
+            }
+
+            .slide-title {
+                font-size: clamp(32px, 9vw, 42px);
+            }
+
+            .slide-description {
+                font-size: 15px;
+                line-height: 1.6;
+            }
+
+            .slide-cta {
+                padding: 14px 28px;
+                font-size: 14px;
+                width: 100%;
+                justify-content: center;
+            }
+
+            .progress-container {
+                right: 16px;
+                gap: 14px;
+            }
+
+            .progress-dot {
+                width: 8px;
+                height: 8px;
+            }
+
+            .scroll-hint {
+                bottom: 16px;
+            }
+
+            .portfolio-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+                max-width: 100%;
+            }
+
+            .portfolio-card {
+                padding: 16px 10px;
+                gap: 10px;
+            }
+
+            .portfolio-icon {
+                font-size: 24px;
+                width: 48px;
+                height: 48px;
+            }
+
+            .portfolio-name {
+                font-size: 11px;
+            }
+
+            .welcome-title {
+                font-size: clamp(32px, 10vw, 48px);
+            }
+
+            .welcome-subtitle {
+                font-size: 15px;
+                margin-bottom: 32px;
+            }
+
+            .stats-row {
+                margin-top: 40px;
+                gap: 20px;
+            }
+
+            .stat-item {
+                flex: 0 0 45%;
+            }
+
+            .stat-value {
+                font-size: 28px;
+            }
+
+            .stat-label {
+                font-size: 10px;
+                letter-spacing: 1.5px;
+            }
+        }
+
+        /* Responsive - Mobile Small */
+        @media (max-width: 380px) {
+            .slide-content {
+                padding: 0 16px;
+                padding-top: 50px;
+            }
+
+            .slide-title {
+                font-size: 28px;
+            }
+
+            .slide-description {
+                font-size: 14px;
+            }
+
+            .industry-tag {
+                padding: 5px 10px;
+            }
+
+            .industry-tag-text {
+                font-size: 9px;
+                letter-spacing: 1.5px;
+            }
+
+            .slide-cta {
+                padding: 12px 24px;
+                font-size: 13px;
+            }
+
+            .welcome-title {
+                font-size: 28px;
+            }
+
+            .welcome-subtitle {
+                font-size: 14px;
+            }
+
+            .portfolio-grid {
+                gap: 8px;
+            }
+
+            .portfolio-card {
+                padding: 14px 8px;
+            }
+
+            .portfolio-icon {
+                font-size: 22px;
+                width: 44px;
+                height: 44px;
+            }
+
+            .portfolio-name {
+                font-size: 10px;
+            }
+
+            .stats-row {
+                gap: 16px;
+            }
+
+            .stat-value {
+                font-size: 24px;
+            }
+
+            .stat-label {
+                font-size: 9px;
+            }
+        }
+
+        /* Landscape mode for mobile */
+        @media (max-height: 500px) and (orientation: landscape) {
+            .slide-content {
+                padding: 0 40px;
+                padding-top: 20px;
+            }
+
+            .slide-title {
+                font-size: 28px;
+                margin-bottom: 12px;
+            }
+
+            .slide-description {
+                font-size: 13px;
+                margin-bottom: 16px;
+                max-width: 400px;
+            }
+
+            .industry-tag {
+                margin-bottom: 12px;
+            }
+
+            .slide-cta {
+                padding: 10px 24px;
+                font-size: 13px;
+            }
+
+            .scroll-hint {
+                display: none;
+            }
+
+            .slide-counter {
+                bottom: 10px;
+            }
+
+            .counter-current {
+                font-size: 24px;
+            }
+
+            .welcome-title {
+                font-size: 32px;
+                margin-bottom: 12px;
+            }
+
+            .welcome-subtitle {
+                font-size: 14px;
+                margin-bottom: 24px;
+            }
+
+            .portfolio-grid {
+                grid-template-columns: repeat(6, 1fr);
+                gap: 8px;
+                max-width: 100%;
+            }
+
+            .portfolio-card {
+                padding: 12px 8px;
+            }
+
+            .portfolio-icon {
+                width: 40px;
+                height: 40px;
+                font-size: 20px;
+            }
+
+            .portfolio-name {
+                font-size: 9px;
+            }
+
+            .stats-row {
+                margin-top: 20px;
+                gap: 24px;
+            }
+
+            .stat-value {
+                font-size: 24px;
+            }
+
+            .stat-label {
+                font-size: 9px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Custom Cursor -->
+    <div class="cursor"></div>
+    <div class="cursor-dot"></div>
+
+    <!-- Background -->
+    <div class="bg-gradient"></div>
+    <div class="bg-grid"></div>
+    <div class="noise-overlay"></div>
+
+
+
+    <!-- Progress Indicator -->
+    <div class="progress-container">
+        <div class="progress-item active" data-slide="0">
+            <div class="progress-dot"></div>
+            <span class="progress-label">Healthcare</span>
+        </div>
+        <div class="progress-item" data-slide="1">
+            <div class="progress-dot"></div>
+            <span class="progress-label">Retail</span>
+        </div>
+        <div class="progress-item" data-slide="2">
+            <div class="progress-dot"></div>
+            <span class="progress-label">Manufacturing</span>
+        </div>
+        <div class="progress-item" data-slide="3">
+            <div class="progress-dot"></div>
+            <span class="progress-label">Education</span>
+        </div>
+        <div class="progress-item" data-slide="4">
+            <div class="progress-dot"></div>
+            <span class="progress-label">Financial</span>
+        </div>
+        <div class="progress-item" data-slide="5">
+            <div class="progress-dot"></div>
+            <span class="progress-label">Futures</span>
+        </div>
+        <div class="progress-item" data-slide="6">
+            <div class="progress-dot"></div>
+            <span class="progress-label">Welcome</span>
+        </div>
+    </div>
+
+    <!-- Slide Counter -->
+    <div class="slide-counter">
+        <span class="counter-current">01</span>
+        <span class="counter-divider">/</span>
+        <span class="counter-total">07</span>
+    </div>
+
+    <!-- Scroll Hint -->
+    <div class="scroll-hint">
+        <span class="scroll-hint-text">Scroll to Explore</span>
+        <div class="scroll-hint-icon"></div>
+    </div>
+
+    <!-- Slides Container -->
+    <div class="slides-container">
+        <!-- Slide 1: Healthcare -->
+        <div class="slide active" data-index="0">
+            <div class="slide-content">
+                <div class="slide-left">
+                    <div class="industry-tag">
+                        <span class="industry-tag-dot"></span>
+                        <span class="industry-tag-text">Industry Solutions</span>
+                    </div>
+                    <h1 class="slide-title">
+                        <span>Healthcare</span><br>
+                        Transformation
+                    </h1>
+                    <p class="slide-description">
+                        Empower purposeful connections with your team of caregivers. 
+                        Bridge communication gaps between shifts, departments, and 
+                        locations to deliver exceptional patient care.
+                    </p>
+                    <a href="#" class="slide-cta">
+                        <span>Explore Healthcare Solutions</span>
+                        <svg class="cta-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M5 12h14M12 5l7 7-7 7"/>
+                        </svg>
+                    </a>
+                </div>
+                <div class="slide-right">
+                    <div class="visual-container">
+                        <div class="visual-ring visual-ring-1"></div>
+                        <div class="visual-ring visual-ring-2"></div>
+                        <div class="visual-ring visual-ring-3"></div>
+                        <div class="visual-icon">🏥</div>
+                        <div class="floating-elements">
+                            <div class="floating-element">💊</div>
+                            <div class="floating-element">🩺</div>
+                            <div class="floating-element">❤️</div>
+                            <div class="floating-element">🔬</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 2: Retail -->
+        <div class="slide" data-index="1">
+            <div class="slide-content">
+                <div class="slide-left">
+                    <div class="industry-tag">
+                        <span class="industry-tag-dot"></span>
+                        <span class="industry-tag-text">Industry Solutions</span>
+                    </div>
+                    <h1 class="slide-title">
+                        <span>Retail</span><br>
+                        Excellence
+                    </h1>
+                    <p class="slide-description">
+                        Unleash exceptional customer experiences that begin with 
+                        empowered employees. Connect your frontline teams across 
+                        every store, region, and channel.
+                    </p>
+                    <a href="#" class="slide-cta">
+                        <span>Explore Retail Solutions</span>
+                        <svg class="cta-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M5 12h14M12 5l7 7-7 7"/>
+                        </svg>
+                    </a>
+                </div>
+                <div class="slide-right">
+                    <div class="visual-container">
+                        <div class="visual-ring visual-ring-1"></div>
+                        <div class="visual-ring visual-ring-2"></div>
+                        <div class="visual-ring visual-ring-3"></div>
+                        <div class="visual-icon">🛍️</div>
+                        <div class="floating-elements">
+                            <div class="floating-element">🏪</div>
+                            <div class="floating-element">💳</div>
+                            <div class="floating-element">⭐</div>
+                            <div class="floating-element">📦</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 3: Manufacturing -->
+        <div class="slide" data-index="2">
+            <div class="slide-content">
+                <div class="slide-left">
+                    <div class="industry-tag">
+                        <span class="industry-tag-dot"></span>
+                        <span class="industry-tag-text">Industry Solutions</span>
+                    </div>
+                    <h1 class="slide-title">
+                        <span>Manufacturing</span><br>
+                        Innovation
+                    </h1>
+                    <p class="slide-description">
+                        Break the communication barrier and finally reach your 
+                        factory floor. Ensure safety protocols, operational updates, 
+                        and company news reach every worker.
+                    </p>
+                    <a href="#" class="slide-cta">
+                        <span>Explore Manufacturing Solutions</span>
+                        <svg class="cta-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M5 12h14M12 5l7 7-7 7"/>
+                        </svg>
+                    </a>
+                </div>
+                <div class="slide-right">
+                    <div class="visual-container">
+                        <div class="visual-ring visual-ring-1"></div>
+                        <div class="visual-ring visual-ring-2"></div>
+                        <div class="visual-ring visual-ring-3"></div>
+                        <div class="visual-icon">🏭</div>
+                        <div class="floating-elements">
+                            <div class="floating-element">⚙️</div>
+                            <div class="floating-element">🔧</div>
+                            <div class="floating-element">🦺</div>
+                            <div class="floating-element">📊</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 4: Education -->
+        <div class="slide" data-index="3">
+            <div class="slide-content">
+                <div class="slide-left">
+                    <div class="industry-tag">
+                        <span class="industry-tag-dot"></span>
+                        <span class="industry-tag-text">Industry Solutions</span>
+                    </div>
+                    <h1 class="slide-title">
+                        <span>Education</span><br>
+                        Empowerment
+                    </h1>
+                    <p class="slide-description">
+                        Unite educators, administrators, and support staff in 
+                        a mission-driven environment. Foster collaboration that 
+                        inspires learning excellence.
+                    </p>
+                    <a href="#" class="slide-cta">
+                        <span>Explore Education Solutions</span>
+                        <svg class="cta-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M5 12h14M12 5l7 7-7 7"/>
+                        </svg>
+                    </a>
+                </div>
+                <div class="slide-right">
+                    <div class="visual-container">
+                        <div class="visual-ring visual-ring-1"></div>
+                        <div class="visual-ring visual-ring-2"></div>
+                        <div class="visual-ring visual-ring-3"></div>
+                        <div class="visual-icon">🎓</div>
+                        <div class="floating-elements">
+                            <div class="floating-element">📚</div>
+                            <div class="floating-element">✏️</div>
+                            <div class="floating-element">🔬</div>
+                            <div class="floating-element">💡</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 5: Financial Services -->
+        <div class="slide" data-index="4">
+            <div class="slide-content">
+                <div class="slide-left">
+                    <div class="industry-tag">
+                        <span class="industry-tag-dot"></span>
+                        <span class="industry-tag-text">Industry Solutions</span>
+                    </div>
+                    <h1 class="slide-title">
+                        <span>Financial</span><br>
+                        Services
+                    </h1>
+                    <p class="slide-description">
+                        Navigate regulatory complexity while keeping teams informed 
+                        and aligned. Enable secure, compliant communication that 
+                        builds trust across your organization.
+                    </p>
+                    <a href="#" class="slide-cta">
+                        <span>Explore Financial Solutions</span>
+                        <svg class="cta-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M5 12h14M12 5l7 7-7 7"/>
+                        </svg>
+                    </a>
+                </div>
+                <div class="slide-right">
+                    <div class="visual-container">
+                        <div class="visual-ring visual-ring-1"></div>
+                        <div class="visual-ring visual-ring-2"></div>
+                        <div class="visual-ring visual-ring-3"></div>
+                        <div class="visual-icon">🏦</div>
+                        <div class="floating-elements">
+                            <div class="floating-element">💰</div>
+                            <div class="floating-element">📈</div>
+                            <div class="floating-element">🔐</div>
+                            <div class="floating-element">💎</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 6: Futures -->
+        <div class="slide" data-index="5">
+            <div class="slide-content">
+                <div class="slide-left">
+                    <div class="industry-tag">
+                        <span class="industry-tag-dot"></span>
+                        <span class="industry-tag-text">Industry Solutions</span>
+                    </div>
+                    <h1 class="slide-title">
+                        <span>Futures</span><br>
+                        & Beyond
+                    </h1>
+                    <p class="slide-description">
+                        Shape tomorrow's workplace with AI-native employee experiences. 
+                        Stay ahead of the curve with cutting-edge communication 
+                        solutions designed for what's next.
+                    </p>
+                    <a href="#" class="slide-cta">
+                        <span>Explore Future Solutions</span>
+                        <svg class="cta-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M5 12h14M12 5l7 7-7 7"/>
+                        </svg>
+                    </a>
+                </div>
+                <div class="slide-right">
+                    <div class="visual-container">
+                        <div class="visual-ring visual-ring-1"></div>
+                        <div class="visual-ring visual-ring-2"></div>
+                        <div class="visual-ring visual-ring-3"></div>
+                        <div class="visual-icon">🚀</div>
+                        <div class="floating-elements">
+                            <div class="floating-element">🤖</div>
+                            <div class="floating-element">🌐</div>
+                            <div class="floating-element">⚡</div>
+                            <div class="floating-element">✨</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 7: Welcome Portal -->
+        <div class="slide slide-welcome" data-index="6">
+            <div class="slide-content">
+                <div class="slide-left" style="grid-column: 1 / -1;">
+                    <div class="industry-tag">
+                        <span class="industry-tag-dot"></span>
+                        <span class="industry-tag-text">Welcome to the Future</span>
+                    </div>
+                    <h1 class="welcome-title">
+                        Your Journey<br>Starts Here
+                    </h1>
+                    <p class="welcome-subtitle">
+                        Explore our industry-specific solutions and discover how 
+                        Staffbase can transform your employee experience with 
+                        AI-powered communication.
+                    </p>
+                    
+                    <div class="portfolio-grid">
+                        <a href="#" class="portfolio-card" data-goto="0">
+                            <div class="portfolio-icon">🏥</div>
+                            <span class="portfolio-name">Healthcare</span>
+                        </a>
+                        <a href="#" class="portfolio-card" data-goto="1">
+                            <div class="portfolio-icon">🛍️</div>
+                            <span class="portfolio-name">Retail</span>
+                        </a>
+                        <a href="#" class="portfolio-card" data-goto="2">
+                            <div class="portfolio-icon">🏭</div>
+                            <span class="portfolio-name">Manufacturing</span>
+                        </a>
+                        <a href="#" class="portfolio-card" data-goto="3">
+                            <div class="portfolio-icon">🎓</div>
+                            <span class="portfolio-name">Education</span>
+                        </a>
+                        <a href="#" class="portfolio-card" data-goto="4">
+                            <div class="portfolio-icon">🏦</div>
+                            <span class="portfolio-name">Financial Services</span>
+                        </a>
+                        <a href="#" class="portfolio-card" data-goto="5">
+                            <div class="portfolio-icon">🚀</div>
+                            <span class="portfolio-name">Futures</span>
+                        </a>
+                    </div>
+
+                    <div class="stats-row">
+                        <div class="stat-item">
+                            <div class="stat-value">2000+</div>
+                            <div class="stat-label">Companies</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">16.5M</div>
+                            <div class="stat-label">Employees Reached</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">190+</div>
+                            <div class="stat-label">Countries</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">97%</div>
+                            <div class="stat-label">Satisfaction</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Scroll Animation Controller
+        class ScrollSlider {
+            constructor() {
+                this.currentSlide = 0;
+                this.totalSlides = document.querySelectorAll('.slide').length;
+                this.isAnimating = false;
+                this.touchStartY = 0;
+                this.touchStartX = 0;
+                this.lastScrollTime = Date.now();
+                
+                this.init();
+            }
+
+            init() {
+                // Wheel event
+                window.addEventListener('wheel', (e) => this.handleScroll(e), { passive: false });
+                
+                // Touch events with improved handling
+                window.addEventListener('touchstart', (e) => this.handleTouchStart(e), { passive: true });
+                window.addEventListener('touchend', (e) => this.handleTouchEnd(e), { passive: false });
+                
+                // Keyboard events
+                window.addEventListener('keydown', (e) => this.handleKeydown(e));
+                
+                // Progress dots click
+                document.querySelectorAll('.progress-item').forEach(item => {
+                    item.addEventListener('click', () => {
+                        const slideIndex = parseInt(item.dataset.slide);
+                        this.goToSlide(slideIndex);
+                    });
+                });
+
+                // Portfolio cards click
+                document.querySelectorAll('.portfolio-card[data-goto]').forEach(card => {
+                    card.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        const slideIndex = parseInt(card.dataset.goto);
+                        this.goToSlide(slideIndex);
+                    });
+                });
+
+                // Custom cursor (only on non-touch devices)
+                if (window.matchMedia('(hover: hover)').matches) {
+                    this.initCursor();
+                }
+
+                // Handle resize
+                window.addEventListener('resize', () => this.handleResize());
+            }
+
+            handleResize() {
+                // Recalculate viewport height for mobile browsers
+                document.documentElement.style.setProperty('--vh', `${window.innerHeight * 0.01}px`);
+            }
+
+            handleScroll(e) {
+                e.preventDefault();
+                
+                const now = Date.now();
+                if (now - this.lastScrollTime < 100) return;
+                
+                if (this.isAnimating) return;
+                
+                const delta = e.deltaY;
+                
+                if (Math.abs(delta) > 30) {
+                    if (delta > 0) {
+                        this.nextSlide();
+                    } else {
+                        this.prevSlide();
+                    }
+                    this.lastScrollTime = now;
+                }
+            }
+
+            handleTouchStart(e) {
+                this.touchStartY = e.touches[0].clientY;
+                this.touchStartX = e.touches[0].clientX;
+                this.touchStartTime = Date.now();
+            }
+
+            handleTouchEnd(e) {
+                if (this.isAnimating) return;
+                
+                const touchEndY = e.changedTouches[0].clientY;
+                const touchEndX = e.changedTouches[0].clientX;
+                const touchEndTime = Date.now();
+                
+                const diffY = this.touchStartY - touchEndY;
+                const diffX = this.touchStartX - touchEndX;
+                const timeDiff = touchEndTime - this.touchStartTime;
+                
+                // Only register as swipe if:
+                // 1. Vertical movement is greater than horizontal (not a horizontal swipe)
+                // 2. Movement is significant enough (> 50px)
+                // 3. Swipe was fast enough (< 500ms)
+                if (Math.abs(diffY) > Math.abs(diffX) && Math.abs(diffY) > 50 && timeDiff < 500) {
+                    e.preventDefault();
+                    if (diffY > 0) {
+                        this.nextSlide();
+                    } else {
+                        this.prevSlide();
+                    }
+                }
+            }
+
+            handleKeydown(e) {
+                if (this.isAnimating) return;
+                
+                if (e.key === 'ArrowDown' || e.key === 'PageDown' || e.key === ' ') {
+                    e.preventDefault();
+                    this.nextSlide();
+                } else if (e.key === 'ArrowUp' || e.key === 'PageUp') {
+                    e.preventDefault();
+                    this.prevSlide();
+                }
+            }
+
+            nextSlide() {
+                if (this.currentSlide < this.totalSlides - 1) {
+                    this.goToSlide(this.currentSlide + 1);
+                }
+            }
+
+            prevSlide() {
+                if (this.currentSlide > 0) {
+                    this.goToSlide(this.currentSlide - 1);
+                }
+            }
+
+            goToSlide(index) {
+                if (index === this.currentSlide || this.isAnimating) return;
+                
+                this.isAnimating = true;
+                
+                // Update slides
+                const slides = document.querySelectorAll('.slide');
+                slides[this.currentSlide].classList.remove('active');
+                slides[index].classList.add('active');
+                
+                // Update progress
+                const progressItems = document.querySelectorAll('.progress-item');
+                progressItems[this.currentSlide].classList.remove('active');
+                progressItems[index].classList.add('active');
+                
+                // Update counter
+                document.querySelector('.counter-current').textContent = 
+                    String(index + 1).padStart(2, '0');
+                
+                // Update scroll hint visibility
+                const scrollHint = document.querySelector('.scroll-hint');
+                if (index === this.totalSlides - 1) {
+                    scrollHint.style.opacity = '0';
+                } else {
+                    scrollHint.style.opacity = '0.6';
+                }
+                
+                this.currentSlide = index;
+                
+                setTimeout(() => {
+                    this.isAnimating = false;
+                }, 800);
+            }
+
+            initCursor() {
+                const cursor = document.querySelector('.cursor');
+                const cursorDot = document.querySelector('.cursor-dot');
+                
+                if (!cursor || !cursorDot) return;
+                
+                let mouseX = 0;
+                let mouseY = 0;
+                let cursorX = 0;
+                let cursorY = 0;
+                
+                document.addEventListener('mousemove', (e) => {
+                    mouseX = e.clientX;
+                    mouseY = e.clientY;
+                    
+                    cursorDot.style.left = mouseX + 'px';
+                    cursorDot.style.top = mouseY + 'px';
+                });
+                
+                const animateCursor = () => {
+                    cursorX += (mouseX - cursorX) * 0.15;
+                    cursorY += (mouseY - cursorY) * 0.15;
+                    
+                    cursor.style.left = cursorX - 10 + 'px';
+                    cursor.style.top = cursorY - 10 + 'px';
+                    
+                    requestAnimationFrame(animateCursor);
+                };
+                
+                animateCursor();
+                
+                // Hover effects
+                const interactiveElements = document.querySelectorAll('a, button, .progress-item, .portfolio-card');
+                
+                interactiveElements.forEach(el => {
+                    el.addEventListener('mouseenter', () => {
+                        cursor.style.transform = 'scale(1.5)';
+                        cursor.style.borderColor = 'var(--accent-gold)';
+                    });
+                    
+                    el.addEventListener('mouseleave', () => {
+                        cursor.style.transform = 'scale(1)';
+                        cursor.style.borderColor = 'var(--staffbase-light-blue)';
+                    });
+                });
+            }
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            new ScrollSlider();
+            
+            // Set initial viewport height
+            document.documentElement.style.setProperty('--vh', `${window.innerHeight * 0.01}px`);
+        });
+    </script>
+</body>
+</html>
